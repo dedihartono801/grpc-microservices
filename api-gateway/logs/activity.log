@@ -1,4 +1,9 @@
-time="2023-10-30T23:37:25+07:00" level=error msg="dial tcp: lookup logstash: no such host"
-time="2023-10-30T16:41:54Z" level=error msg="dial tcp 192.168.112.5:6000: connect: connection refused"
-time="2023-10-30T16:44:11Z" level=info msg="Request handled" client_ip=192.168.96.1 latency=229.931541ms method=POST path=/user/register request_body="{\n    \"username\": \"Hartono\",\n    \"email\": \"hartono@gmail.com\",\n    \"password\": \"12345\"\n}" status=201
-time="2023-10-30T16:44:18Z" level=info msg="Request handled" client_ip=192.168.96.1 latency=18.766292ms method=POST path=/user/login request_body="{\n    \"email\": \"hartono@gmail.com\",\n    \"password\": \"12345\"\n}" status=200
+time="2023-10-30T17:08:20Z" level=error msg="dial tcp 192.168.176.3:6000: connect: connection refused"
+time="2023-10-30T17:10:53Z" level=info msg="Request handled" client_ip=192.168.160.1 latency=267.024417ms method=GET path=/products request_body= status=200
+time="2023-10-30T17:12:18Z" level=info msg="Request handled" client_ip=192.168.160.1 latency=71.098292ms method=GET path=/products request_body= status=200
+time="2023-10-30T17:12:37Z" level=info msg="Request handled" client_ip=192.168.160.1 latency=31.099083ms method=GET path=/products request_body= status=200
+time="2023-10-30T17:12:47Z" level=info msg="Request handled" client_ip=192.168.160.1 latency=152.19ms method=POST path=/user/register request_body="{\n    \"username\": \"Hartono\",\n    \"email\": \"hartono@gmail.com\",\n    \"password\": \"12345\"\n}" status=201
+time="2023-10-30T17:13:23Z" level=info msg="Request handled" client_ip=192.168.160.1 latency=30.165583ms method=POST path=/user/login request_body="{\n    \"email\": \"hartono@gmail.com\",\n    \"password\": \"12345\"\n}" status=200
+time="2023-10-30T17:13:36Z" level=info msg="Request handled" client_ip=192.168.160.1 latency=23.21125ms method=POST path=/user/login request_body="{\n    \"email\": \"hartono@gmail.com\",\n    \"password\": \"12345\"\n}" status=200
+time="2023-10-30T17:13:51Z" level=info msg="Request handled" client_ip=192.168.160.1 latency=22.488459ms method=POST path=/user/login request_body="{\n    \"email\": \"hartono@gmail.com\",\n    \"password\": \"12345\"\n}" status=200
+time="2023-10-30T17:15:49Z" level=info msg="Request handled" client_ip=192.168.160.1 latency=15.102292ms method=POST path=/user/login request_body="{\n    \"email\": \"hartono@gmail.com\",\n    \"password\": \"12345\"\n}" status=200

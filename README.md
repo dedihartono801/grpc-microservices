@@ -8,6 +8,8 @@
 $ docker-compose up -d
 ```
 
+## wait until all containers are actually running.
+
 ## Create Index Elasticsearch
 
 ```bash
