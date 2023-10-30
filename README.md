@@ -1,6 +1,6 @@
 ## Diagram
 
-![alt text](https://github.com/dedihartono801/test-kredit-plus/blob/master/system-design.jpg)
+![alt text](https://github.com/dedihartono801/grpc-microservices/blob/master/system-design.jpg)
 
 ## Run Service
 
