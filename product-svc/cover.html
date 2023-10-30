@@ -1,0 +1,319 @@
+
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<title>user: Go Coverage Report</title>
+		<style>
+			body {
+				background: black;
+				color: rgb(80, 80, 80);
+			}
+			body, pre, #legend span {
+				font-family: Menlo, monospace;
+				font-weight: bold;
+			}
+			#topbar {
+				background: black;
+				position: fixed;
+				top: 0; left: 0; right: 0;
+				height: 42px;
+				border-bottom: 1px solid rgb(80, 80, 80);
+			}
+			#content {
+				margin-top: 50px;
+			}
+			#nav, #legend {
+				float: left;
+				margin-left: 10px;
+			}
+			#legend {
+				margin-top: 12px;
+			}
+			#nav {
+				margin-top: 10px;
+			}
+			#legend span {
+				margin: 0 5px;
+			}
+			.cov0 { color: rgb(192, 0, 0) }
+.cov1 { color: rgb(128, 128, 128) }
+.cov2 { color: rgb(116, 140, 131) }
+.cov3 { color: rgb(104, 152, 134) }
+.cov4 { color: rgb(92, 164, 137) }
+.cov5 { color: rgb(80, 176, 140) }
+.cov6 { color: rgb(68, 188, 143) }
+.cov7 { color: rgb(56, 200, 146) }
+.cov8 { color: rgb(44, 212, 149) }
+.cov9 { color: rgb(32, 224, 152) }
+.cov10 { color: rgb(20, 236, 155) }
+
+		</style>
+	</head>
+	<body>
+		<div id="topbar">
+			<div id="nav">
+				<select id="files">
+				
+				<option value="file0">github.com/dedihartono801/kp-user-svc/internal/app/usecase/user/service.go (5.2%)</option>
+				
+				</select>
+			</div>
+			<div id="legend">
+				<span>not tracked</span>
+			
+				<span class="cov0">not covered</span>
+				<span class="cov8">covered</span>
+			
+			</div>
+		</div>
+		<div id="content">
+		
+		<pre class="file" id="file0" style="display: none">package user
+
+import (
+        "errors"
+        "fmt"
+        "strconv"
+        "time"
+
+        "github.com/dedihartono801/kp-user-svc/internal/app/repository"
+        "github.com/dedihartono801/kp-user-svc/internal/entity"
+        "github.com/dedihartono801/kp-user-svc/pkg/config"
+        "github.com/dedihartono801/kp-user-svc/pkg/customstatus"
+        "github.com/dedihartono801/kp-user-svc/pkg/dto"
+        "github.com/dedihartono801/kp-user-svc/pkg/helpers"
+        "github.com/dedihartono801/kp-user-svc/pkg/identifier"
+        pb "github.com/dedihartono801/kp-user-svc/pkg/protobuf"
+        "github.com/dedihartono801/kp-user-svc/pkg/validator"
+)
+
+type Service interface {
+        CreateLF(input *pb.CreateLFRequest) (int, error)
+        GetTenor() ([]*pb.Tenor, error)
+        GetUser(input *pb.UserRequest) (*pb.User, int, error)
+        GetUserId(input *pb.UserRequest) (*pb.UserIdResponse, int, error)
+        GetUserLimitByUserIdAndTenorId(input *pb.CheckLimitRequest) (int, error)
+        GetUserIdByIdCard(input *pb.UserIdByIdCardRequest) (*pb.UserIdResponse, int, error)
+}
+
+type service struct {
+        userRepository          repository.UserRepository
+        tenorRepository         repository.TenorRepository
+        dbTransactionRepository repository.DbTransactionRepository
+        validator               validator.Validator
+        identifier              identifier.Identifier
+}
+
+func NewGrpcUserService(
+        userRepository repository.UserRepository,
+        tenorRepository repository.TenorRepository,
+        dbTransactionRepository repository.DbTransactionRepository,
+        validator validator.Validator,
+        identifier identifier.Identifier,
+) Service <span class="cov8" title="1">{
+        return &amp;service{
+                userRepository:          userRepository,
+                tenorRepository:         tenorRepository,
+                dbTransactionRepository: dbTransactionRepository,
+                validator:               validator,
+                identifier:              identifier,
+        }
+}</span>
+
+func (s *service) CreateLF(input *pb.CreateLFRequest) (int, error) <span class="cov0" title="0">{
+        dt := []*dto.CreateUserLimitDto{}
+        IdCardPhoto, err := helpers.DecodeBase64(input.IdCardPhoto)
+        if err != nil </span><span class="cov0" title="0">{
+                return customstatus.ErrBadRequest.Code, errors.New(err.Error())
+        }</span>
+        <span class="cov0" title="0">SelfiePhoto, err := helpers.DecodeBase64(input.SelfiePhoto)
+        if err != nil </span><span class="cov0" title="0">{
+                return customstatus.ErrBadRequest.Code, errors.New(err.Error())
+        }</span>
+
+        // Use the Parse function to convert the string to a time.Time object
+        <span class="cov0" title="0">date, err := time.Parse("2006-01-02", input.BirthDate)
+        if err != nil </span><span class="cov0" title="0">{
+                return customstatus.ErrBadRequest.Code, errors.New(err.Error())
+        }</span>
+
+        <span class="cov0" title="0">user := entity.User{
+                AccountId:    input.AccountId,
+                FullName:     input.FullName,
+                LegalName:    input.LegalName,
+                IdCardNumber: input.IdCardNumber,
+                BirthPlace:   input.BirthPlace,
+                BirthDate:    date,
+                Salary:       input.Salary,
+                IdCardPhoto:  IdCardPhoto,
+                SelfiePhoto:  SelfiePhoto,
+                Data:         input.Data,
+        }
+
+        if err := s.validator.Validate(user); err != nil </span><span class="cov0" title="0">{
+                return customstatus.ErrBadRequest.Code, err
+        }</span>
+
+        <span class="cov0" title="0">_, err = s.userRepository.FindByAccountId(input.AccountId)
+        if err == nil </span><span class="cov0" title="0">{
+                return customstatus.ErrAccountId.Code, errors.New(customstatus.ErrAccountId.Message)
+        }</span>
+
+        <span class="cov0" title="0">_, err = s.userRepository.FindByIDCardNumber(input.IdCardNumber)
+        if err == nil </span><span class="cov0" title="0">{
+                return customstatus.ErrIDCardFound.Code, errors.New(customstatus.ErrIDCardFound.Message)
+        }</span>
+
+        //begin transaction
+        <span class="cov0" title="0">tx, err := s.dbTransactionRepository.BeginTransaction()
+        if err != nil </span><span class="cov0" title="0">{
+                return customstatus.ErrInternalServerError.Code, errors.New(customstatus.ErrInternalServerError.Message)
+        }</span>
+
+        <span class="cov0" title="0">userId, err := s.userRepository.CreateLF(tx, &amp;user)
+        if err != nil </span><span class="cov0" title="0">{
+                return customstatus.ErrInternalServerError.Code, errors.New(customstatus.ErrInternalServerError.Message)
+        }</span>
+
+        <span class="cov0" title="0">tenors, err := s.userRepository.GetTenor(tx)
+        if err != nil </span><span class="cov0" title="0">{
+                tx.Rollback()
+                return customstatus.ErrInternalServerError.Code, errors.New(customstatus.ErrInternalServerError.Message)
+        }</span>
+
+        <span class="cov0" title="0">limit, err := strconv.Atoi(config.GetEnv("LIMIT"))
+        if err != nil </span><span class="cov0" title="0">{
+                tx.Rollback()
+                return customstatus.ErrInternalServerError.Code, errors.New(customstatus.ErrInternalServerError.Message)
+        }</span>
+        <span class="cov0" title="0">for _, val := range tenors </span><span class="cov0" title="0">{
+                dt = append(dt, &amp;dto.CreateUserLimitDto{
+                        UserId:  userId,
+                        TenorId: val.ID,
+                        Limit:   limit,
+                })
+        }</span>
+
+        <span class="cov0" title="0">err = s.userRepository.CreateUserLimits(tx, dt)
+        if err != nil </span><span class="cov0" title="0">{
+                tx.Rollback()
+                return customstatus.ErrInternalServerError.Code, errors.New(customstatus.ErrInternalServerError.Message)
+        }</span>
+
+        //commit transaction
+        <span class="cov0" title="0">err = s.dbTransactionRepository.CommitTransaction(tx)
+        if err != nil </span><span class="cov0" title="0">{
+                tx.Rollback()
+                return customstatus.ErrInternalServerError.Code, errors.New(customstatus.ErrInternalServerError.Message)
+        }</span>
+
+        <span class="cov0" title="0">return customstatus.StatusCreated.Code, nil</span>
+}
+
+func (s *service) GetTenor() ([]*pb.Tenor, error) <span class="cov8" title="1">{
+        tenors, err := s.tenorRepository.List()
+        if err != nil </span><span class="cov0" title="0">{
+                return nil, errors.New(customstatus.ErrInternalServerError.Message)
+        }</span>
+        <span class="cov8" title="1">return tenors, nil</span>
+}
+func (s *service) GetUser(input *pb.UserRequest) (*pb.User, int, error) <span class="cov0" title="0">{
+        user, err := s.userRepository.FindByAccountId(input.AccountId)
+        if err != nil </span><span class="cov0" title="0">{
+                return nil, customstatus.ErrNotFound.Code, errors.New(customstatus.ErrNotFound.Message)
+        }</span>
+
+        <span class="cov0" title="0">limits, err := s.userRepository.GetUserLimitByUserId(user.ID)
+        if err != nil </span><span class="cov0" title="0">{
+                return nil, customstatus.ErrNotFound.Code, errors.New(customstatus.ErrNotFound.Message)
+        }</span>
+
+        <span class="cov0" title="0">return &amp;pb.User{
+                Id:           user.ID,
+                FullName:     user.FullName,
+                LegalName:    user.LegalName,
+                IdCardNumber: user.IdCardNumber,
+                BirthPlace:   user.BirthPlace,
+                BirthDate:    string(user.BirthDate.Format("2006-01-02")), //user.BirthDate,
+                Salary:       user.Salary,
+                IdCardPhoto:  user.IdCardPhoto,
+                SelfiePhoto:  user.SelfiePhoto,
+                Data:         user.Data,
+                LineFacility: limits,
+        }, customstatus.StatusOk.Code, nil</span>
+}
+
+func (s *service) GetUserId(input *pb.UserRequest) (*pb.UserIdResponse, int, error) <span class="cov0" title="0">{
+        user, err := s.userRepository.FindByAccountId(input.AccountId)
+        if err != nil </span><span class="cov0" title="0">{
+                return nil, customstatus.ErrNotFound.Code, errors.New(customstatus.ErrNotFound.Message)
+        }</span>
+        <span class="cov0" title="0">userId := &amp;pb.UserIdResponse{
+                UserId: user.AccountId,
+        }
+        return userId, customstatus.StatusOk.Code, nil</span>
+}
+
+func (s *service) GetUserIdByIdCard(input *pb.UserIdByIdCardRequest) (*pb.UserIdResponse, int, error) <span class="cov0" title="0">{
+        user, err := s.userRepository.FindByIDCardNumber(input.IdCard)
+        if err != nil </span><span class="cov0" title="0">{
+                return nil, customstatus.ErrNotFound.Code, errors.New(customstatus.ErrNotFound.Message)
+        }</span>
+        <span class="cov0" title="0">userId := &amp;pb.UserIdResponse{
+                UserId: user.AccountId,
+        }
+        return userId, customstatus.StatusOk.Code, nil</span>
+}
+
+func (s *service) GetUserLimitByUserIdAndTenorId(input *pb.CheckLimitRequest) (int, error) <span class="cov0" title="0">{
+        userLimit, err := s.userRepository.GetUserLimitByUserIdAndTenorId(input.UserId, input.TenorId)
+        if err != nil </span><span class="cov0" title="0">{
+                return customstatus.ErrNotFound.Code, errors.New(customstatus.ErrNotFound.Message)
+        }</span>
+
+        <span class="cov0" title="0">if userLimit.Limit &lt; input.Amount </span><span class="cov0" title="0">{
+                err := fmt.Errorf("limit tidak mencukupi sisa limit adalah %d", userLimit.Limit)
+                return customstatus.ErrBadRequest.Code, errors.New(err.Error())
+        }</span>
+
+        <span class="cov0" title="0">userLimit.Limit -= input.Amount
+        err = s.userRepository.UpdateLimit(userLimit)
+        if err != nil </span><span class="cov0" title="0">{
+                return customstatus.ErrInternalServerError.Code, errors.New(customstatus.ErrInternalServerError.Message)
+        }</span>
+
+        <span class="cov0" title="0">return customstatus.StatusOk.Code, nil</span>
+}
+</pre>
+		
+		</div>
+	</body>
+	<script>
+	(function() {
+		var files = document.getElementById('files');
+		var visible;
+		files.addEventListener('change', onChange, false);
+		function select(part) {
+			if (visible)
+				visible.style.display = 'none';
+			visible = document.getElementById(part);
+			if (!visible)
+				return;
+			files.value = part;
+			visible.style.display = 'block';
+			location.hash = part;
+		}
+		function onChange() {
+			select(files.value);
+			window.scrollTo(0, 0);
+		}
+		if (location.hash != "") {
+			select(location.hash.substr(1));
+		}
+		if (!visible) {
+			select("file0");
+		}
+	})();
+	</script>
+</html>

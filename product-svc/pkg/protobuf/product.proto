@@ -1,0 +1,35 @@
+syntax = "proto3";
+
+package product;
+
+option go_package = "github.com/dedihartono801/product-svc/pkg/protobuf";
+import "google/protobuf/empty.proto";
+
+service ProductService {
+    rpc ListProduct(google.protobuf.Empty) returns (ProductResponse) {}
+    rpc ProcessProduct(ProcessProductRequest) returns (ProcessProductResponse) {}
+  }
+
+message ProductResponse {
+    int32 status = 1;
+    string error = 2;
+    repeated Product data = 3;
+}
+
+message Product{
+    int64 id = 1;
+    string name = 2;
+    int32 stock = 3;
+    int64 price = 4;
+}
+
+message ProcessProductRequest {
+    int64 product_id = 1;
+    int32 quantity = 2;
+}
+
+message ProcessProductResponse {
+    int32 status = 1;
+    string error = 2;
+    int64 price = 3;
+}

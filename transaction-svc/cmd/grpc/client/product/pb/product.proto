@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+package product;
+
+option go_package = "github.com/dedihartono801/transaction-svc/cmd/grpc/client/product/pb";
+
+service ProductService {
+    rpc ProcessProduct(ProcessProductRequest) returns (ProcessProductResponse) {}
+  }
+
+message ProcessProductRequest {
+    int64 product_id = 1;
+    int32 quantity = 2;
+}
+
+message ProcessProductResponse {
+    int32 status = 1;
+    string error = 2;
+    int64 price = 3;
+}

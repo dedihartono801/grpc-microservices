@@ -1,0 +1,53 @@
+syntax = "proto3";
+
+package transaction;
+
+option go_package = "github.com/dedihartono801/api-gateway/pkg/transaction/pb";
+
+service TransactionService {
+    rpc Transaction(TransactionRequest) returns (TransactionResponse) {}
+    rpc GetDetailTransaction(GetDetailTransactionRequest) returns (DetailTransactionResponse) {}
+}
+
+
+message TransactionRequest {
+    int64 user_id = 1;
+    repeated Items items = 2;
+}
+
+message Items{
+    int64 product_id = 1;
+    int32 quantity = 2;
+    int64 price = 3;
+}
+
+message TransactionResponse {
+    int32 status = 1;
+    string error = 2;
+    int64 transaction_id = 3;
+}
+
+message GetDetailTransactionRequest {
+    int64 transaction_id = 1;
+}
+
+message ItemsDetail{
+    int64 id = 1;
+    int64 product_id = 2;
+    int32 quantity = 3;
+    int64 price = 4;
+}
+
+message Transaction {
+    int64 id =1;
+    int64 user_id = 2;
+    int64 total_amount = 3;
+    int64 total_quantity = 4;
+    repeated ItemsDetail items = 5;
+}
+
+message DetailTransactionResponse {
+    int32 status = 1;
+    string error = 2;
+    Transaction data = 3;
+}

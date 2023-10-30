@@ -1,0 +1,122 @@
+version: '3.8'
+
+services:
+  api-gateway:
+    container_name: api-gateway
+    restart: always
+    volumes:
+      - .:/app
+      - ./api-gateway/logs:/app/logs
+    build:
+      context: .
+      dockerfile: api-gateway/cmd/DockerfileDev
+    ports:
+      - '4000:4000'
+    networks:
+      - bubble
+      - elk
+
+  auth-svc:
+    container_name: auth-svc
+    restart: always
+    volumes:
+      - .:/app
+    build:
+      context: .
+      dockerfile: auth-svc/cmd/grpc/DockerfileDev
+    ports:
+      - '5004:5004'
+    networks:
+      - bubble
+
+  transaction-svc:
+    container_name: transaction-svc
+    restart: always
+    volumes:
+      - .:/app
+    build:
+      context: .
+      dockerfile: transaction-svc/cmd/grpc/DockerfileDev
+    ports:
+      - '5003:5003'
+    networks:
+      - bubble
+
+  product-svc:
+    container_name: product-svc
+    restart: always
+    volumes:
+      - .:/app
+    build:
+      context: .
+      dockerfile: product-svc/cmd/grpc/DockerfileDev
+    ports:
+      - '5002:5002'
+    networks:
+      - bubble
+
+  mysql:
+    container_name: mysql
+    image: mysql:8.0.32
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - '3306:3306'
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+    networks:
+      - bubble
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.10.4
+    container_name: elasticsearch
+    environment:
+      - discovery.type=single-node
+      - ES_JAVA_OPTS=-Xms512m -Xmx512m
+      - xpack.security.enabled=false
+    ports:
+      - '9200:9200'
+    networks:
+      - elk
+
+  logstash:
+    image: docker.elastic.co/logstash/logstash:8.10.4
+    container_name: logstash
+    volumes:
+      - ./logstash-config:/usr/share/logstash/pipeline
+    ports:
+      - '6000:6000'
+    environment:
+      - LS_JAVA_OPTS=-Xms256m -Xmx256m
+    depends_on:
+      - elasticsearch
+    networks:
+      - elk
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:8.10.4
+    container_name: kibana
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+    ports:
+      - '5601:5601'
+    depends_on:
+      - elasticsearch
+    networks:
+      - elk
+
+  redis:
+    container_name: redis
+    image: redis
+    ports:
+      - '6379:6379'
+    networks:
+      - bubble
+
+volumes:
+  mysql_data:
+
+networks:
+  bubble:
+  elk:

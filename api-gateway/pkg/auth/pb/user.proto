@@ -1,0 +1,54 @@
+syntax = "proto3";
+
+package user;
+
+option go_package = "github.com/dedihartono801/api-gateway/pkg/auth/pb";
+
+service UserService {
+    rpc Register(RegisterRequest) returns (RegisterResponse) {}
+    rpc Login(LoginRequest) returns (LoginResponse) {}
+    rpc Validate(ValidateRequest) returns (ValidateResponse) {}
+  }
+
+message RegisterRequest {
+    string username = 1;
+    string email = 2;
+    string password = 3;
+}
+
+message User {
+    string username = 1;
+    string email = 2;
+  }
+
+message RegisterResponse {
+    int32 status = 1;
+    string error = 2;
+    User data = 3;
+}
+
+message LoginRequest {
+    string email = 1;
+    string password = 2;
+}
+
+message Token {
+    string token = 1;
+    string expired_at = 2;
+}
+
+message LoginResponse {
+    int32 status = 1;
+    string error = 2;
+    Token data = 3;
+}
+
+message ValidateRequest {
+    string token = 1;
+}
+
+message ValidateResponse {
+    int32 status = 1;
+    uint64 user_id = 2;
+    string error = 3;
+}
