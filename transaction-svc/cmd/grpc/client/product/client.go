@@ -40,7 +40,7 @@ func InitServiceClient() ServiceClient {
 		fmt.Println("Could not connect:", err)
 	}
 
-	fmt.Println("Connect to user service")
+	fmt.Println("Connect to product service")
 
 	return ServiceClient{
 		Product: productPb.NewProductServiceClient(cc),
